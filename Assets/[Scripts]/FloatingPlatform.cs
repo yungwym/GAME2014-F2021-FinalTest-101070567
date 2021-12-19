@@ -1,25 +1,33 @@
+/* File Header - FloatingPlatform.cs
+ * 
+ * Robert Wymer 
+ * Student Number - 101070567 
+ * Date Modified - Dec 18, 2021
+ * 
+ * Description - Handles Shrinking and Expanding of Floating Platform
+ * Events of Begin Collision and end Collsion With Player
+ * Plays Shrinking and Expanding Sounds in respective events
+ */
+
+
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class FloatingPlatform : MonoBehaviour
 {
-
     public Transform[] waypoints;
     public float moveSpeed;
     public int waypointIndex;
 
-    private Vector3 initialScale;
-
     private float duration = 2.0f;
 
-    private bool collidingWithPlayer = false;
-
+    public AudioSource[] sounds;
 
     // Start is called before the first frame update
     void Start()
     {
-        initialScale = gameObject.transform.localScale;
+        sounds = GetComponents<AudioSource>();
     }
 
     // Update is called once per frame
@@ -28,6 +36,8 @@ public class FloatingPlatform : MonoBehaviour
         MoveBetweenPoints();
     }
 
+
+    //Moves Platform between 2 waypoints 
     void MoveBetweenPoints()
     {
         Vector3 targetPos = waypoints[waypointIndex].position;
@@ -42,6 +52,7 @@ public class FloatingPlatform : MonoBehaviour
         }
     }
 
+    //Checks for Collision with Player and calls ShrinkPlatform Coroutine
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -50,6 +61,7 @@ public class FloatingPlatform : MonoBehaviour
         }
     }
 
+    //Checks for Collision with Player and calls ResetPlatform Coroutine
     private void OnCollisionExit2D(Collision2D other)
     {
         if (other.gameObject.CompareTag("Player"))
@@ -58,10 +70,12 @@ public class FloatingPlatform : MonoBehaviour
         }
     }
 
-
+    //Shrinking Platform Coroutine - Decreases local scale of the platform over 2 seconds, plays shrinking sound 
     IEnumerator ShrinkPlatform()
     {
         Debug.Log("Shrinking");
+
+        sounds[0].Play();
 
         Vector3 startScale = new Vector3(1.0f, 1.0f, 1.0f);
         Vector3 targetScale = new Vector3(0.0f, 1.0f, 1.0f);
@@ -80,9 +94,12 @@ public class FloatingPlatform : MonoBehaviour
         yield return null;
     }
 
+    //Reset Platform Coroutine - Increases local scale of the platform over 2 seconds, plays expanding sound 
     IEnumerator ResetPlatform()
     {
         Debug.Log("Restting");
+
+        sounds[1].Play();
 
         Vector3 startScale = new Vector3(0.0f, 1.0f, 1.0f);
         Vector3 targetScale = new Vector3(1.0f, 1.0f, 1.0f);
